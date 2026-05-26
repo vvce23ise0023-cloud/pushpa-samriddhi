@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+ 
+ <title>PushpaSamriddhi - All-In-One Floriculture Portal</title>
+ <meta name="description" content="PushpaSamriddhi is a multi-language mobile-ready floriculture support portal. Helping farmers track market flower prices, diagnose crop illness, search cultivation, and trade produce.">
+ <meta name="theme-color" content="#1b5e20">
+ <meta name="mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-capable" content="yes">
+ 
+ <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+ <!-- IMPORT MAPS FOR NATIVE CDN RESOLUTION -->
+ <script type="importmap">
+ {
+ "imports": {
+ "react": "https://esm.sh/react@18.2.0",
+ "react-dom": "https://esm.sh/react-dom@18.2.0/client",
+ "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+ "lucide-react": "https://esm.sh/lucide-react@0.379.0"
+ }
+ }
+ </script>
+ <!-- Pre-load Fonts -->
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Hindi+Madurai:wght@400;500;700&display=swap" rel="stylesheet">
+ <style>
+ :root {
+ --primary-hue: 142;
+ --primary: hsl(var(--primary-hue), 76%, 36%);
+ --primary-hover: hsl(var(--primary-hue), 76%, 28%);
+ --primary-light: hsl(var(--primary-hue), 40%, 94%);
+ 
+ --secondary-hue: 38;
+ --secondary: hsl(var(--secondary-hue), 92%, 50%);
+ --secondary-hover: hsl(var(--secondary-hue), 92%, 40%);
+ --secondary-light: hsl(var(--secondary-hue), 90%, 95%);
+ --background: hsl(140, 20%, 98%);
+ --surface: hsl(0, 0%, 100%);
+ --surface-hover: hsl(140, 10%, 96%);
+ --border: hsl(140, 15%, 88%);
+ --text: hsl(140, 30%, 12%);
+ --text-secondary: hsl(140, 10%, 40%);
+ 
+ --error: hsl(0, 84%, 60%);
+ --success: hsl(142, 76%, 36%);
+ 
+ --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+ --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+ --shadow-lg: 0 16px 40px rgba(0,0,0,0.1);
+ --radius: 16px;
+ --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ 
+ --font-latin: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+ --font-indic: 'Hindi Madurai', sans-serif;
+ 
+ --bottom-tab-height: 72px;
+ }
+ @media (prefers-color-scheme: dark) {
+ :root {
+ --background: hsl(140, 24%, 6%);
+ --surface: hsl(140, 20%, 10%);
+ --surface-hover: hsl(140, 20%, 14%);
+ --border: hsl(140, 15%, 16%);
+ --text: hsl(140, 20%, 95%);
+ --text-secondary: hsl(140, 10%, 65%);
+ --primary-light: hsl(var(--primary-hue), 40%, 12%);
+ --secondary-light: hsl(var(--secondary-hue), 50%, 12%);
+ 
+ --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+ --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+ --shadow-lg: 0 16px 40px rgba(0,0,0,0.5);
+ }
+ }
+ * {
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+ font-family: var(--font-latin);
+ -webkit-tap-highlight-color: transparent;
+ }
+ body.lang-hi *, body.lang-kn * {
+ font-family: var(--font-indic), var(--font-latin);
+ }
+ html, body {
+ background-color: var(--background);
+ color: var(--text);
+ overflow-x: hidden;
+ height: 100%;
+ width: 100%;
+ overscroll-behavior-y: contain;
+ }
+ #root {
+ display: flex;
+ flex-direction: column;
+ min-height: 100vh;
+ }
+ ::-webkit-scrollbar {
+ width: 8px;
+ height: 8px;
+ }
+ ::-webkit-scrollbar-track {
+ background: var(--background);
+ }
+ ::-webkit-scrollbar-thumb {
+ background: var(--border);
+ border-radius: 4px;
+ }
+ ::-webkit-scrollbar-thumb:hover {
+ background: var(--text-secondary);
+ }
+ .glass {
+ background: rgba(255, 255, 255, 0.7);
+ backdrop-filter: blur(12px);
+ -webkit-backdrop-filter: blur(12px);
+ border: 1px solid rgba(255, 255, 255, 0.2);
+ }
+ @media (prefers-color-scheme: dark) {
+ .glass {
+ background: rgba(20, 28, 24, 0.7);
+ border: 1px solid rgba(255, 255, 255, 0.05);
+ }
+ }
+ button, .tab-button, .nav-item, .no-select {
+ user-select: none;
+ -webkit-user-select: none;
+ }
+ @keyframes fadeIn {
+ from { opacity: 0; transform: translateY(10px); }
+ to { opacity: 1; transform: translateY(0); }
+ }
+ @keyframes pulse {
+ 0% { transform: scale(1); }
+ 50% { transform: scale(1.04); }
+ 100% { transform: scale(1); }
+ }
+ @keyframes spin {
+ to { transform: rotate(360deg); }
+ }
+ .safe-header {
+ padding-top: max(16px, env(safe-area-inset-top));
+ padding-left: max(16px, env(safe-area-inset-left));
+ padding-right: max(16px, env(safe-area-inset-right));
+ }
+ .safe-footer {
+ padding-bottom: max(12px, env(safe-area-inset-bottom));
+ padding-left: max(16px, env(safe-area-inset-left));
+ padding-right: max(16px, env(safe-area-inset-right));
+ }
+ .app-container {
+ display: flex;
+ flex-direction: column;
+ min-height: 100vh;
+ padding-bottom: var(--bottom-tab-height);
+ max-width: 1200px;
+ margin: 0 auto;
+ width: 100%;
+ }
+ @media (min-width: 768px) {
+ .app-container {
+ padding-bottom: 0;
+ }
+ }
+ .pull-to-refresh-indicator {
+ position: absolute;
+ top: 0; left: 0; right: 0;
+ height: 60px;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ gap: 8px;
+ font-size: 0.9rem;
+ color: var(--text-secondary);
+ transform: translateY(-100%);
+ transition: transform 0.2s ease;
+ pointer-events: none;
+ z-index: 50;
+ }
+ .pull-to-refresh-indicator.visible {
+ transform: translateY(0);
+ }
+ .spinner {
+ width: 18px;
+ height: 18px;
+ border: 2px solid var(--border);
+ border-top-color: var(--primary);
+ border-radius: 50%;
+ animation: spin 0.8s linear infinite;
+ }
+ .input-group {
+ display: flex;
+ flex-direction: column;
+ gap: 6px;
+ margin-bottom: 16px;
+ }
+ .input-group label {
+ font-weight: 600;
+ font-size: 0.9rem;
+ color: var(--text);
+ }
+ .input-group input, 
+ .input-group textarea {
+ padding: 12px 16px;
+ border: 1px solid var(--border);
+ background-color: var(--surface);
+ color: var(--text);
+ border-radius: 12px;
+ font-size: 1rem;
+ outline: none;
+ transition: var(--transition);
+ }
+ .input-group input:focus, 
+ .input-group textarea:focus {
+ border-color: var(--primary);
+ box-shadow: 0 0 0 3px var(--primary-light);
+ }
+ .btn {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ padding: 12px 24px;
+ border-radius: 12px;
+ font-weight: 600;
+ font-size: 1rem;
+ cursor: pointer;
+ transition: var(--transition);
+ border: none;
+ outline: none;
+ }
+ .btn-primary {
+ background-color: var(--primary);
+ color: white;
+ }
+ .btn-primary:hover {
+ background-color: var(--primary-hover);
+ transform: translateY(-1px);
+ }
+ .btn-secondary {
+ background-color: var(--primary-light);
+ color: var(--primary);
+ }
+ .btn-secondary:hover {
+ background-color: var(--border);
+ }
+ .btn-danger {
+ background-color: var(--error);
+ color: white;
+ }
+ .badge {
+ display: inline-flex;
+ align-items: center;
+ padding: 4px 10px;
+ border-radius: 20px;
+ font-size: 0.72rem;
+ font-weight: 700;
+ text-transform: uppercase;
+ }
+ .badge-primary {
+ background-color: var(--primary-light);
+ color: var(--primary);
+ }
+ .badge-secondary {
+ background-color: var(--secondary-light);
+ color: var(--secondary);
+ }
+ .badge-ai {
+ background: linear-gradient(135deg, #8a2be2, #4169e1);
+ color: white;
+ }
+ .spin-anim {
+ animation: spin 1.5s linear infinite;
+ }
+ @media (max-width: 480px) {
+ .safe-header span {
+ display: none !important;
+ }
+ }
+ @media (min-width: 768px) {
+ .desktop-nav-bar {
+ display: block !important;
+ }
+ .dashboard-grid {
+ display: grid !important;
+ grid-template-columns: 1fr 1.2fr !important;
+ }
+ }
+ </style>
+</head>
+<body>
+ 
+ <div id="root"></div>
+ <!-- BROWSER ES-MODULES CODE ASSEMBLY -->
+ <script type="module">
+ import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+ import ReactDOM from 'react-dom/client';
+ 
+ // Lucide Icons Import Adapter (Direct Object mapping since esm.sh has lucide-react standard exports)
+ import { 
+ Flower, Globe, User, LogOut, Home as HomeIcon, BookOpen, 
+ ShoppingBag, MessageSquare, X, Upload, Check, ChevronRight, 
+ TrendingUp, Plus, MapPin, RefreshCw, Compass, Bot, Send, 
+ Image as ImageIcon, Trash2, Calendar, Search, ShieldAlert, 
+ Award, Users, Mail, Settings, AlertCircle, Layers
+ } from 'lucide-react';
+ // ----------------------------------------------------
+ // MULTI-LANGUAGE CATALOG & CONTEXT
+ // ----------------------------------------------------
+ const LanguageContext = createContext();
+ const translations = {
+ en: {
+ appName: "PushpaSamriddhi",
+ tagline: "Empowering Floriculture Farmers",
+ searchPlaceholder: "Search flowers, techniques, diseases...",
+ pullToRefresh: "Pull down to refresh",
+ refreshing: "Refreshing data...",
+ releaseToRefresh: "Release to refresh",
+ logout: "Log Out",
+ deleteAccount: "Delete Account",
+ confirmDeleteAccount: "Are you absolutely sure you want to delete your account? This action is permanent and cannot be undone.",
+ loginTitle: "Welcome to PushpaSamriddhi",
+ loginSubtitle: "Sign in with your mobile number to get started",
+ phoneLabel: "Mobile Number",
+ phonePlaceholder: "Enter 10-digit number",
+ sendOtp: "Send OTP",
+ otpLabel: "Enter 4-Digit OTP",
+ verifyOtp: "Verify OTP",
+ mockOtpAlert: "For testing, use code: ",
+ invalidPhone: "Please enter a valid 10-digit mobile number",
+ invalidOtp: "Incorrect OTP. Please try again.",
+ tabHome: "Home",
+ tabArticles: "Knowledge",
+ tabMarketplace: "Market",
+ tabAskExpert: "Chat Expert",
+ weatherTitle: "Local Weather Forecast",
+ marketTrendsTitle: "Your Crop Market Trends",
+ trendingCrops: "Trending Crops",
+ highPrices: "Peak Time to Sell",
+ governmentSchemes: "Government Schemes",
+ cultivationTechniques: "Flower Cultivation",
+ pestManagement: "Pest & Disease Control",
+ newsHeading: "Daily Floriculture News",
+ viewAllArticles: "Browse All Articles",
+ currentPrice: "Current Price",
+ weeklyChange: "Weekly Change",
+ articleSearch: "Search Knowledge Base",
+ categories: "Categories",
+ all: "All",
+ cultivation: "Cultivation",
+ pestControl: "Pests & Disease",
+ schemes: "Govt Schemes",
+ news: "AI Agri-News",
+ aiGenerated: "AI Auto-Fetched",
+ readMore: "Read Details",
+ marketplaceTitle: "Flower Trade Marketplace",
+ buyTab: "Buyers Looking to Buy",
+ sellTab: "Flowers For Sale",
+ postListingBtn: "Create Trade Post",
+ postListingTitle: "Create New Listing",
+ listingType: "I want to...",
+ buyFlower: "Buy Flowers",
+ sellFlower: "Sell Flowers",
+ flowerType: "Flower Variety",
+ selectFlower: "Select Flower Type",
+ quantity: "Quantity (in kg/stems)",
+ price: "Target Price (₹)",
+ location: "Your Location / Village",
+ contactPhone: "Contact Number",
+ uploadFlowerImg: "Upload Flower/Crop Photo",
+ submitListing: "Publish Listing",
+ cancel: "Cancel",
+ activeListings: "Active Deals",
+ cancelListingBtn: "Cancel Listing",
+ deleteSuccess: "Listing successfully removed",
+ requiredFields: "Please fill all fields",
+ chatbotName: "PushpaMitra AI Bot",
+ chatWelcome: "Hello! I am PushpaMitra. Share your crop problems or upload a photo of your diseased flowers for a simulated diagnosis.",
+ uploadPhotoBtn: "Diagnose Plant Photo",
+ askButton: "Send Inquiry",
+ chatbotPlaceholder: "Type your query here...",
+ expertConsultation: "Expert Panel Consultation",
+ expertTitle: "Contact Field Officers",
+ callOfficer: "Call Officer",
+ botDiagnosing: "PushpaMitra is analyzing your image...",
+ botResultHealthy: "The flower looks healthy and strong! Keep up the watering schedule.",
+ botResultDisease: "Diagnosis: Leaf Rust detected. Recommendation: Apply organic Neem oil spray and reduce overhead watering to control moisture levels.",
+ helpTitle: "Support & Settings",
+ contactSupport: "Need help? Call our toll-free support line at 1800-456-7890.",
+ settingsSection: "App Settings",
+ dangerZone: "Danger Zone",
+ deleteWarningText: "Once you delete your account, all your data, profile details, and listings will be permanently wiped.",
+ },
+ hi: {
+ appName: "पुष्पसमृद्धि",
+ tagline: "फूलों की खेती करने वाले किसानों का सशक्तीकरण",
+ searchPlaceholder: "फूल, तकनीक, बीमारियां खोजें...",
+ pullToRefresh: "रिफ्रेश करने के लिए नीचे खींचें",
+ refreshing: "डेटा लोड हो रहा है...",
+ releaseToRefresh: "रिफ्रेश करने के लिए छोड़ें",
+ logout: "लॉग आउट",
+ deleteAccount: "खाता हटाएं",
+ confirmDeleteAccount: "क्या आप वाकई अपना खाता हटाना चाहते हैं? यह स्थायी है और इसे वापस नहीं लिया जा सकता।",
+ loginTitle: "पुष्पसमृद्धि में आपका स्वागत है",
+ loginSubtitle: "शुरू करने के लिए अपने मोबाइल नंबर से साइन इन करें",
+ phoneLabel: "मोबाइल नंबर",
+ phonePlaceholder: "10 अंकों का नंबर दर्ज करें",
+ sendOtp: "ओटीपी भेजें",
+ otpLabel: "4 अंकों का ओटीपी दर्ज करें",
+ verifyOtp: "ओटीपी सत्यापित करें",
+ mockOtpAlert: "परीक्षण के लिए कोड: ",
+ invalidPhone: "कृपया वैध 10-अंकीय मोबाइल नंबर दर्ज करें",
+ invalidOtp: "गलत ओटीपी। फिर प्रयास करें।",
+ tabHome: "मुख्य पृष्ठ",
+ tabArticles: "ज्ञान केंद्र",
+ tabMarketplace: "बाज़ार",
+ tabAskExpert: "विशेषज्ञ सलाह",
+ weatherTitle: "स्थानीय मौसम पूर्वानुमान",
+ marketTrendsTitle: "आपकी फसल के बाज़ार भाव",
+ trendingCrops: "लोकप्रिय फसलें",
+ highPrices: "बेचने का सही समय",
+ governmentSchemes: "सरकारी योजनाएं",
+ cultivationTechniques: "फूलों की खेती",
+ pestManagement: "कीट एवं रोग नियंत्रण",
+ newsHeading: "दैनिक कृषि समाचार",
+ viewAllArticles: "सभी लेख देखें",
+ currentPrice: "वर्तमान मूल्य",
+ weeklyChange: "साप्ताहिक बदलाव",
+ articleSearch: "ज्ञान केंद्र में खोजें",
+ categories: "श्रेणियाँ",
+ all: "सभी",
+ cultivation: "खेती की तकनीक",
+ pestControl: "कीट और रोग",
+ schemes: "सरकारी योजनाएं",
+ news: "एआई समाचार",
+ aiGenerated: "एआई द्वारा जनरेटेड",
+ readMore: "विवरण पढ़ें",
+ marketplaceTitle: "फूल व्यापार बाज़ार",
+ buyTab: "खरीदार (खरीदने के इच्छुक)",
+ sellTab: "फूल बिक्री के लिए",
+ postListingBtn: "नया व्यापार पोस्ट करें",
+ postListingTitle: "नया विज्ञापन बनाएं",
+ listingType: "मैं चाहता हूँ...",
+ buyFlower: "फूल खरीदना",
+ sellFlower: "फूल बेचना",
+ flowerType: "फूल की किस्म",
+ selectFlower: "फूल का प्रकार चुनें",
+ quantity: "मात्रा (किग्रा/डंठल में)",
+ price: "लक्ष्य मूल्य (₹)",
+ location: "आपका स्थान / गाँव",
+ contactPhone: "संपर्क नंबर",
+ uploadFlowerImg: "फूल/फसल की फोटो अपलोड करें",
+ submitListing: "विज्ञापन प्रकाशित करें",
+ cancel: "रद्द करें",
+ activeListings: "सक्रिय सौदे",
+ cancelListingBtn: "विज्ञापन रद्द करें",
+ deleteSuccess: "विज्ञापन सफलतापूर्वक हटा दिया गया",
+ requiredFields: "कृपया सभी फ़ील्ड भरें",
+ chatbotName: "पुष्पमित्र एआई बोट",
+ chatWelcome: "नमस्ते! मैं पुष्पमित्र हूँ। अपनी फसल की समस्या साझा करें या रोगग्रस्त फूलों की फोटो अपलोड करें ताकी मैं उसकी जांच कर सकूं।",
+ uploadPhotoBtn: "पौधे की फोटो जांचें",
+ askButton: "सवाल पूछें",
+ chatbotPlaceholder: "अपना सवाल यहाँ लिखें...",
+ expertConsultation: "विशेषज्ञ पैनल परामर्श",
+ expertTitle: "कृषि अधिकारियों से संपर्क करें",
+ callOfficer: "अधिकारी को कॉल करें",
+ botDiagnosing: "पुष्पमित्र आपकी फोटो की जांच कर रहा है...",
+ botResultHealthy: "फूल स्वस्थ और मजबूत दिख रहा है! पानी देने का समय सही रखें।",
+ botResultDisease: "जांच परिणाम: पत्ती का रस्ट (Leaf Rust) रोग। सलाह: जैविक नीम के तेल का छिड़काव करें और नमी को नियंत्रित करने के लिए सिंचाई कम करें।",
+ helpTitle: "सहायता और सेटिंग्स",
+ contactSupport: "मदद की ज़रूरत है? टोल-फ्री सहायता लाइन 1800-456-7890 पर कॉल करें।",
+ settingsSection: "ऐप सेटिंग्स",
+ dangerZone: "खतरनाक क्षेत्र",
+ deleteWarningText: "खाता हटा देने के बाद आपकी सभी जानकारी, प्रोफाइल और विज्ञापन स्थायी रूप से मिटा दिए जाएंगे।",
+ },
+ kn: {
+ appName: "ಪುಷ್ಪಸಮೃದ್ಧಿ",
+ tagline: "ಹೂ ಬೇಸಾಯ ರೈತರ ಸಬಲೀಕರಣ",
+ searchPlaceholder: "ಹೂಗಳು, ಬೇಸಾಯ ವಿಧಾನಗಳು, ರೋಗಗಳನ್ನು ಹುಡುಕಿ...",
+ pullToRefresh: "ರಿಫ್ರೆಶ್ ಮಾಡಲು ಕೆಳಗೆ ಎಳೆಯಿರಿ",
+ refreshing: "ಮಾಹಿತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+ releaseToRefresh: "ರಿಫ್ರೆಶ್ ಮಾಡಲು ಬಿಟ್ಟುಬಿಡಿ",
+ logout: "ಲಾಗ್ ಔಟ್",
+ deleteAccount: "ಖಾತೆ ಅಳಿಸಿ",
+ confirmDeleteAccount: "ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ? ಈ ಹಂತವು ಶಾಶ್ವತವಾಗಿದೆ.",
+ loginTitle: "ಪುಷ್ಪಸಮೃದ್ಧಿಗೆ ಸುಸ್ವಾಗತ",
+ loginSubtitle: "ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ",
+ phoneLabel: "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+ phonePlaceholder: "10 ಅಂಕಿಯ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ",
+ sendOtp: "ಒಟಿಪಿ ಕಳುಹಿಸಿ",
+ otpLabel: "4 ಅಂಕಿಯ ಒಟಿಪಿ ನಮೂದಿಸಿ",
+ verifyOtp: "ಒಟಿಪಿ ಪರಿಶೀಲಿಸಿ",
+ mockOtpAlert: "ಪರೀಕ್ಷೆಗಾಗಿ ಕೋಡ್: ",
+ invalidPhone: "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ",
+ invalidOtp: "ತಪ್ಪಾದ ಒಟಿಪಿ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+ tabHome: "ಮುಖಪುಟ",
+ tabArticles: "ಜ್ಞಾನ ಕೇಂದ್ರ",
+ tabMarketplace: "ಮಾರುಕಟ್ಟೆ",
+ tabAskExpert: "ತಜ್ಞರ ಸಲಹೆ",
+ weatherTitle: "ಸ್ಥಳೀಯ ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ",
+ marketTrendsTitle: "ನಿಮ್ಮ ಬೆಳೆ ಮಾರುಕಟ್ಟೆ ದರಗಳು",
+ trendingCrops: "ಪ್ರಮುಖ ಬೆಳೆಗಳು",
+ highPrices: "ಮಾರಾಟ ಮಾಡಲು ಸೂಕ್ತ ಸಮಯ",
+ governmentSchemes: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
+ cultivationTechniques: "ಹೂ ಬೇಸಾಯ ವಿಧಾನಗಳು",
+ pestManagement: "ಕೀಟ ಮತ್ತು ರೋಗ ನಿರ್ವಹಣೆ",
+ newsHeading: "ದೈನಂದಿನ ಕೃಷಿ ಸುದ್ದಿ",
+ viewAllArticles: "ಎಲ್ಲಾ ಲೇಖನಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
+ currentPrice: "ಪ್ರಸ್ತುತ ಬೆಲೆ",
+ weeklyChange: "ವಾರದ ಬದಲಾವಣೆ",
+ articleSearch: "ಜ್ಞಾನ ಕೇಂದ್ರದಲ್ಲಿ ಹುಡುಕಿ",
+ categories: "ವರ್ಗಗಳು",
+ all: "ಎಲ್ಲಾ",
+ cultivation: "ಬೇಸಾಯ ವಿಧಾನ",
+ pestControl: "ಕೀಟ ಮತ್ತು ರೋಗ",
+ schemes: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
+ news: "ಎಐ ಕೃಷಿ ಸುದ್ದಿ",
+ aiGenerated: "ಎಐ ಸ್ವಯಂಚಾಲಿತ",
+ readMore: "ವಿವರಗಳನ್ನು ಓದಿ",
+ marketplaceTitle: "ಹೂವು ವ್ಯಾಪಾರ ಮಾರುಕಟ್ಟೆ",
+ buyTab: "ಖರೀದಿದಾರರು (ಖರೀದಿಸಲು ಆಸಕ್ತಿ)",
+ sellTab: "ಹೂವುಗಳ ಮಾರಾಟ",
+ postListingBtn: "ಹೊಸ ವ್ಯಾಪಾರ ಪೋಸ್ಟ್ ಮಾಡಿ",
+ postListingTitle: "ಹೊಸ ಜಾಹೀರಾತು ರಚಿಸಿ",
+ listingType: "ನಾನು ಬಯಸುವುದು...",
+ buyFlower: "ಹೂವುಗಳನ್ನು ಖರೀದಿಸುವುದು",
+ sellFlower: "ಹೂವುಗಳನ್ನು ಮಾರಾಟ ಮಾಡುವುದು",
+ flowerType: "ಹೂವಿನ ತಳಿ",
+ selectFlower: "ಹೂವಿನ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+ quantity: "ಪ್ರಮಾಣ (ಕೆಜಿ/ದಂಟುಗಳಲ್ಲಿ)",
+ price: "ಟಾರ್ಗೆಟ್ ಬೆಲೆ (₹)",
+ location: "ನಿಮ್ಮ ಸ್ಥಳ / ಗ್ರಾಮ",
+ contactPhone: "ಸಂಪರ್ಕ ಸಂಖ್ಯೆ",
+ uploadFlowerImg: "ಹೂವಿನ/ಬೆಳೆಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+ submitListing: "ಜಾಹೀರಾತು ಪ್ರಕಟಿಸಿ",
+ cancel: "ರದ್ದುಮಾಡಿ",
+ activeListings: "ಸಕ್ರಿಯ ವ್ಯವಹಾರಗಳು",
+ cancelListingBtn: "ಜಾಹೀರಾತು ರದ್ದುಮಾಡಿ",
+ deleteSuccess: "ಜಾಹೀರಾತು ಯಶಸ್ವಿಯಾಗಿ ತೆಗೆದುಹಾಕಲಾಗಿದೆ",
+ requiredFields: "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ",
+ chatbotName: "ಪುಷ್ಪಮಿತ್ರ ಎಐ ಬಾಟ್",
+ chatWelcome: "ನಮಸ್ಕಾರ! ನಾನು ಪುಷ್ಪಮಿತ್ರ. ನಿಮ್ಮ ಬೆಳೆಯ ಸಮಸ್ಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ರೋಗ ಪತ್ತೆಗಾಗಿ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.",
+ uploadPhotoBtn: "ಗಿಡದ ಫೋಟೋ ಪರಿಶೀಲಿಸಿ",
+ askButton: "ಪ್ರಶ್ನೆ ಕೇಳಿ",
+ chatbotPlaceholder: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ...",
+ expertConsultation: "ತಜ್ಞರ ಸಮಿತಿ ಸಮಾಲೋಚನೆ",
+ expertTitle: "ಕೃಷಿ ಅಧಿಕಾರಿಗಳನ್ನು ಸಂಪರ್ಕಿಸಿ",
+ callOfficer: "ಅಧಿಕಾರಿಗೆ ಕರೆ ಮಾಡಿ",
+ botDiagnosing: "ಪುಷ್ಪಮಿತ್ರ ಚಿತ್ರವನ್ನು ಪರಿಶೀಲಿಸುತ್ತಿದ್ದಾನೆ...",
+ botResultHealthy: "ಹೂವು ಆರೋಗ್ಯಕರ ಮತ್ತು ಗಟ್ಟಿಯಾಗಿದೆ! ಸರಿಯಾದ ಸಮಯಕ್ಕೆ ನೀರು ನೀಡಿ.",
+ botResultDisease: "ಪರಿಶೀಲನಾ ಫಲಿತಾಂಶ: ಎಲೆಯ ರಸ್ಟ್ (Leaf Rust) ರೋಗ ಪತ್ತೆಯಾಗಿದೆ. ಸಲಹೆ: ಸಾವಯವ ಬೇವಿನ ಎಣ್ಣೆ ಸಿಂಪಡಿಸಿ ಮತ್ತು ತೇವಾಂಶ ನಿಯಂತ್ರಿಸಲು ನೀರಾವರಿ ಕಡಿಮೆ ಮಾಡಿ.",
+ helpTitle: "ಬೆಂಬಲ ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+ contactSupport: "ಸಹಾಯ ಬೇಕೇ? ನಮ್ಮ ಟೋಲ್ ಫ್ರೀ ಸಂಖ್ಯೆ 1800-456-7890 ಗೆ ಕರೆ ಮಾಡಿ.",
+ settingsSection: "ಅಪ್ಲಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+ dangerZone: "ಅಪಾಯಕಾರಿ ವಲಯ",
+ deleteWarningText: "ಖಾತೆ ಅಳಿಸಿದ ನಂತರ ನಿಮ್ಮ ಎಲ್ಲಾ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಜಾಹೀರಾತುಗಳು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲ್ಪಡುತ್ತವೆ.",
+ }
+ };
+ const LanguageProvider = ({ children }) => {
+ const [locale, setLocale] = useState(() => localStorage.getItem('pushpa_locale') || 'en');
+ useEffect(() => {
+ localStorage.setItem('pushpa_locale', locale);
+ document.body.className = `lang-${locale}`;
+ }, [locale]);
+ const t = (key) => translations[locale][key] || key;
+ return React.createElement(LanguageContext.Provider, { value: { locale, setLocale, t } }, children);
+ };
+ const useLanguage = () => useContext(LanguageContext);
+ // ----------------------------------------------------
+ // GLOBAL STATE & APP CONTEXT
+ // ----------------------------------------------------
+ const AppContext = createContext();
+ const initialListings = [
+ { id: "lst-1", type: "sell", flowerType: "Rose", quantity: "500 stems", price: "15", location: "Rajapura, Karnataka", phone: "9876543210", image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop", date: "2026-05-24" },
+ { id: "lst-2", type: "buy", flowerType: "Marigold", quantity: "1200 kg", price: "45", location: "Gauriganj, UP", phone: "9988776655", image: null, date: "2026-05-23" },
+ { id: "lst-3", type: "sell", flowerType: "Jasmine", quantity: "150 kg", price: "120", location: "Thovalai, TN", phone: "9123456789", image: "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=500&auto=format&fit=crop", date: "2026-05-24" }
+ ];
+ const initialArticles = [
+ {
+ id: "art-1",
+ title: { en: "Dutch Rose Greenhouse Cultivation Guide", hi: "डच गुलाब की ग्रीनहाउस खेती गाइड", kn: "ಡಚ್ ರೋಸ್ ಗ್ರೀನ್‌ಹೌಸ್ ಕೃಷಿ ಮಾರ್ಗದರ್ಶಿ" },
+ category: "cultivation",
+ summary: { en: "Learn complete steps for commercial Dutch Rose cultivation including soil preparation, temperature management (15-28°C), and drip irrigation schedules.", hi: "व्यावसायिक डच गुलाब की खेती के पूरे चरण जानें जिसमें मिट्टी की तैयारी, तापमान और सिंचाई कार्यक्रम शामिल हैं।", kn: "ಹನಿ ನೀರಾವರಿ ವೇಳಾಪಟ್ಟಿ ಸೇರಿದಂತೆ ವಾಣಿಜ್ಯ ಡಚ್ ರೋಸ್ ಕೃಷಿಗಾಗಿ ಸಂಪೂರ್ಣ ಹಂತಗಳನ್ನು ಕಲಿಯಿರಿ." },
+ content: { en: "For high quality stems, maintain humidity at 60-70%. Dutch Roses yield excellent returns under polyhouse conditions. Prune regularly during dormant stages to encourage vegetative flushes.", hi: "उच्च गुणवत्ता वाले तनों के लिए, आर्द्रता 60-70% बनाए रखें। पॉलीहाउस परिस्थितियों में डच गुलाब उत्कृष्ट रिटर्न देते हैं।", kn: "ಉತ್ತಮ ಗುಣಮಟ್ಟದ ಹೂವಿನ ದಂಟುಗಳಿಗಾಗಿ, ಆರ್ದ್ರತೆಯನ್ನು 60-70% ರಷ್ಟು ಕಾಪಾಡಿಕೊಳ್ಳಿ. ಪಾಲಿಹೌಸ್ ಪರಿಸ್ಥಿತಿಯಲ್ಲಿ ಡಚ್ ರೋಸ್ ಉತ್ತಮ ಇಳುವರಿಯನ್ನು ನೀಡುತ್ತದೆ." },
+ date: "2026-05-22",
+ image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop"
+ },
+ {
+ id: "art-2",
+ title: { en: "Pest Management: Control Spider Mites on Marigold", hi: "कीट नियंत्रण: गेंदे पर लाल मकड़ी को नियंत्रित करें", kn: "ಕೀಟ ನಿರ್ವಹಣೆ: ಚೆಂಡು ಹೂವಿನಲ್ಲಿ ಕೆಂಪು ಜೇಡ ನುಸಿ ನಿಯಂತ್ರಣ" },
+ category: "pestControl",
+ summary: { en: "Red spider mites can devastate Marigold crops in hot weather. Spot symptoms like yellow speckles on leaves and white webbing under foliage.", hi: "गर्म मौसम में लाल मकड़ी के कीड़े गेंदे की फसल को तबाह कर सकते हैं। पत्तियों पर पीले धब्बे जैसे लक्षणों को पहचानें।", kn: "ಬಿಸಿ ವಾತಾವರಣದಲ್ಲಿ ಕೆಂಪು ಜೇಡ ನುಸಿಗಳು ಚೆಂಡು ಹೂವಿನ ಬೆಳೆಯನ್ನು ನಾಶಮಾಡಬಹುದು." },
+ content: { en: "To treat naturally, spray organic Neem Seed Kernel Extract (5%) or release predatory mites. Keep the fields clean and maintain adequate nitrogen-phosphorus balance.", hi: "प्राकृतिक उपचार के लिए, जैविक नीम बीज गिरी अर्क (5%) का छिड़काव करें। खेतों को साफ रखें।", kn: "ನೈಸರ್ಗಿಕವಾಗಿ ನಿಯಂತ್ರಿಸಲು ಶೇ. 5 ರಷ್ಟು ಬೇವಿನ ಹಿಂಡಿ ಕಷಾಯವನ್ನು ಸಿಂಪಡಿಸಿ." },
+ date: "2026-05-20",
+ image: "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=500&auto=format&fit=crop"
+ },
+ {
+ id: "art-3",
+ title: { en: "Horticulture Development Scheme Subsidies", hi: "बागवानी विकास योजना सब्सिडी विवरण", kn: "ತೋಟಗಾರಿಕೆ ಅಭಿವೃದ್ಧಿ ಯೋಜನೆ ಸಬ್ಸಿಡಿ ಮಾಹಿತಿ" },
+ category: "schemes",
+ summary: { en: "Govt provides up to 50% subsidy on green houses, shade net house setups, and cold storages for flower farmers.", hi: "सरकार फूलों के किसानों के लिए ग्रीनहाउस, शेड नेट हाउस सेटअप और कोल्ड स्टोरेज पर 50% तक की सब्सिडी प्रदान करती है।", kn: "ಸರ್ಕಾರವು ಹೂವಿನ ಬೆಳೆಗಾರರಿಗೆ ಗ್ರೀನ್‌ಹೌಸ್, ನೆರಳು ಪರದೆ ಮತ್ತು ಶೈತ್ಯೀಕರಣ ಘಟಕಗಳ ಮೇಲೆ ಶೇ. 50 ರಷ್ಟು ಸಬ್ಸಿಡಿಯನ್ನು ಒದಗಿಸುತ್ತದೆ." },
+ content: { en: "Submit land registry certificates and identity proofs to your local horticulture department. The application can also be lodged online through unified farmer state portals.", hi: "अपने स्थानीय बागवानी विभाग को भूमि रजिस्ट्री प्रमाण पत्र और पहचान प्रमाण जमा करें।", kn: "ನಿಮ್ಮ ಸ್ಥಳೀಯ ತೋಟಗಾರಿಕಾ ಇಲಾಖೆಗೆ ಜಮೀನಿನ ಪಹಣಿ ಮತ್ತು ಗುರುತಿನ ಚೀಟಿಗಳನ್ನು ಸಲ್ಲಿಸಿ." },
+ date: "2026-05-18",
+ image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop"
+ }
+ ];
+ const newsTemplates = [
+ { title: { en: "Farmers Turn to High-Value Jasmine Export Channels", hi: "किसानों ने चमेली निर्यात चैनलों का रुख किया", kn: "ರೈತರು ಹೆಚ್ಚಿನ ಮೌಲ್ಯದ ಮಲ್ಲಿಗೆ ರಫ್ತು ಮಾರುಕಟ್ಟೆಯತ್ತ ಮುಖ ಮಾಡಿದ್ದಾರೆ" }, summary: { en: "New cargo links open from regional hubs, pushing jasmine demand up by 30% in international markets.", hi: "क्षेत्रीय केंद्रों से नए कार्गो मार्ग खुलने से अंतरराष्ट्रीय बाजारों में चमेली की मांग 30% बढ़ी।", kn: "ಪ್ರಾದೇಶಿಕ ಕೇಂದ್ರಗಳಿಂದ ಹೊಸ ಸರಕು ಸಾಗಣೆ ಮಾರ್ಗಗಳು ಮುಕ್ತವಾಗಿದ್ದು, ಬೇಡಿಕೆ ಹೆಚ್ಚಾಗಿದೆ." } },
+ { title: { en: "New Cold-Storage Subsidy Announced for Rural Growers", hi: "ग्रामीण उत्पादकों के लिए नई कोल्ड-स्टोरेज सब्सिडी की घोषणा", kn: "ಗ್ರಾಮೀಣ ಬೆಳೆಗಾರರಿಗೆ ಹೊಸ ಶೈತ್ಯೀಕರಣ ಘಟಕ ಸಬ್ಸಿಡಿ ಘೋಷಣೆ" }, summary: { en: "To prevent post-harvest spoilage, the state releases extra funding covering 60% setup costs for mini storages.", hi: "कटाई के बाद होने वाले नुकसान से बचने के लिए, राज्य सरकार मिनी स्टोरेज सेटअप लागत का 60% कवर करने वाला अतिरिक्त फंड जारी करेगी।", kn: "ಕೊಯ್ಲಿನ ನಂತರದ ನಷ್ಟವನ್ನು ತಡೆಯಲು, ಸರ್ಕಾರವು ಮಿನಿ ಕೋಲ್ಡ್ ಸ್ಟೋರೇಜ್ ಸ್ಥಾಪನಾ ವೆಚ್ಚದ ಶೇ. 60 ರಷ್ಟು ಹಣ ಸಹಾಯ ಬಿಡುಗಡೆ ಮಾಡಿದೆ." } }
+ ];
+ const defaultMarketPrices = {
+ Rose: [{ day: "Mon", price: 12 }, { day: "Tue", price: 14 }, { day: "Wed", price: 13 }, { day: "Thu", price: 15 }, { day: "Fri", price: 17 }, { day: "Sat", price: 16 }, { day: "Sun", price: 18 }],
+ Marigold: [{ day: "Mon", price: 35 }, { day: "Tue", price: 38 }, { day: "Wed", price: 42 }, { day: "Thu", price: 40 }, { day: "Fri", price: 45 }, { day: "Sat", price: 44 }, { day: "Sun", price: 48 }],
+ Jasmine: [{ day: "Mon", price: 90 }, { day: "Tue", price: 95 }, { day: "Wed", price: 110 }, { day: "Thu", price: 115 }, { day: "Fri", price: 120 }, { day: "Sat", price: 125 }, { day: "Sun", price: 130 }],
+ Anthurium: [{ day: "Mon", price: 200 }, { day: "Tue", price: 190 }, { day: "Wed", price: 210 }, { day: "Thu", price: 220 }, { day: "Fri", price: 215 }, { day: "Sat", price: 230 }, { day: "Sun", price: 245 }]
+ };
+ const AppProvider = ({ children }) => {
+ const [user, setUser] = useState(() => {
+ const saved = localStorage.getItem('pushpa_user');
+ return saved ? JSON.parse(saved) : null;
+ });
+ const [myCrops, setMyCrops] = useState(() => {
+ const saved = localStorage.getItem('pushpa_my_crops');
+ return saved ? JSON.parse(saved) : ["Rose", "Marigold", "Jasmine"];
+ });
+ const [listings, setListings] = useState(() => {
+ const saved = localStorage.getItem('pushpa_listings');
+ return saved ? JSON.parse(saved) : initialListings;
+ });
+ const [articles, setArticles] = useState(() => {
+ const saved = localStorage.getItem('pushpa_articles');
+ return saved ? JSON.parse(saved) : initialArticles;
+ });
+ const [marketPrices, setMarketPrices] = useState(defaultMarketPrices);
+ const [weather, setWeather] = useState({
+ temp: 28, condition: "Sunny", region: "Bangalore Rural", humidity: 55, wind: 12,
+ advice: { en: "Excellent conditions for Rose and Anthurium harvesting. Keep greenhouse ventilation open." },
+ forecast: [{ day: "Mon", temp: 28, cond: "Sunny" }, { day: "Tue", temp: 29, cond: "Partly Cloudy" }, { day: "Wed", temp: 30, cond: "Light Rain" }, { day: "Thu", temp: 27, cond: "Thunderstorm" }]
+ });
+ useEffect(() => {
+ if (user) localStorage.setItem('pushpa_user', JSON.stringify(user));
+ else localStorage.removeItem('pushpa_user');
+ }, [user]);
+ useEffect(() => { localStorage.setItem('pushpa_my_crops', JSON.stringify(myCrops)); }, [myCrops]);
+ useEffect(() => { localStorage.setItem('pushpa_listings', JSON.stringify(listings)); }, [listings]);
+ useEffect(() => { localStorage.setItem('pushpa_articles', JSON.stringify(articles)); }, [articles]);
+ const loginUser = (phone) => setUser({ phone, name: "Farmer " + phone.substring(6), joined: new Date().toLocaleDateString() });
+ const logoutUser = () => setUser(null);
+ const deleteUserAccount = () => {
+ setUser(null); setMyCrops(["Rose", "Marigold", "Jasmine"]);
+ setListings(initialListings); setArticles(initialArticles); localStorage.clear();
+ };
+ const addCropToDashboard = (c) => { if (!myCrops.includes(c)) setMyCrops([...myCrops, c]); };
+ const removeCropFromDashboard = (c) => setMyCrops(myCrops.filter(x => x !== c));
+ const addListing = (l) => setListings([{ id: "lst-" + Date.now(), date: new Date().toISOString().split('T')[0], ...l }, ...listings]);
+ const cancelListing = (id) => setListings(listings.filter(x => x.id !== id));
+ 
+ const refreshMarketplace = () => {
+ return new Promise((resolve) => {
+ setTimeout(() => {
+ const random = {
+ id: "lst-pull-" + Date.now(),
+ type: Math.random() > 0.5 ? "sell" : "buy",
+ flowerType: ["Rose", "Jasmine", "Marigold", "Anthurium"][Math.floor(Math.random() * 4)],
+ quantity: Math.floor(Math.random() * 500 + 100) + " kg",
+ price: Math.floor(Math.random() * 100 + 20).toString(),
+ location: "Rural Mandya, Karnataka",
+ phone: "9" + Math.floor(100000000 + Math.random() * 900000000).toString(),
+ image: null, date: new Date().toISOString().split('T')[0]
+ };
+ setListings(prev => [random, ...prev]);
+ resolve();
+ }, 1200);
+ });
+ };
+ const refreshArticles = () => {
+ return new Promise((resolve) => {
+ setTimeout(() => {
+ const template = newsTemplates[Math.floor(Math.random() * newsTemplates.length)];
+ const exists = articles.some(art => art.title.en === template.title.en);
+ if (!exists) {
+ const newArt = {
+ id: "art-news-" + Date.now(), title: template.title, category: "news", summary: template.summary,
+ content: {
+ en: `${template.summary.en} This bulletin is generated automatically based on market surveys and satellite agricultural indicators compiled today.`,
+ hi: `${template.summary.hi} यह बुलेटिन आज स्वचालित रूप से उत्पन्न होता है।`,
+ kn: `${template.summary.kn} ಈ ಬುಲೆಟಿನ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರಚಿಸಲ್ಪಟ್ಟಿದೆ.`
+ },
+ date: new Date().toLocaleDateString(),
+ image: "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=500&auto=format&fit=crop",
+ aiGenerated: true
+ };
+ setArticles(prev => [newArt, ...prev]);
+ }
+ resolve();
+ }, 1200);
+ });
+ };
+ return React.createElement(AppContext.Provider, {
+ value: {
+ user, myCrops, listings, articles, marketPrices, weather, setWeather,
+ loginUser, logoutUser, deleteUserAccount, addCropToDashboard, removeCropFromDashboard,
+ addListing, cancelListing, refreshMarketplace, refreshArticles
+ }
+ }, children);
+ };
+ const useApp = () => useContext(AppContext);
+ // ----------------------------------------------------
+ // UI COMPONENTS
+ // ----------------------------------------------------
+ // 1. HEADER COMPONENT
+ function Header() {
+ const { locale, setLocale, t } = useLanguage();
+ const { user, logoutUser } = useApp();
+ return React.createElement('header', {
+ className: "glass safe-header",
+ style: { position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid var(--border)', paddingBottom: '16px' }
+ }, React.createElement('div', {
+ style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+ }, React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px' } },
+ React.createElement('div', {
+ style: { background: 'linear-gradient(135deg, var(--primary), var(--secondary))', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }
+ }, React.createElement(Flower, { size: 24, style: { animation: 'pulse 3s infinite ease-in-out' } })),
+ React.createElement('div', null,
+ React.createElement('h1', { style: { fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)', lineHeight: 1.1 } }, t('appName')),
+ React.createElement('span', { style: { fontSize: '0.75rem', color: 'var(--text-secondary)' } }, t('tagline'))
+ )
+ ), React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '12px' } },
+ React.createElement('div', {
+ style: { display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--primary-light)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--border)' }
+ }, React.createElement(Globe, { size: 16, style: { color: 'var(--primary)' } }),
+ React.createElement('select', {
+ value: locale, onChange: (e) => setLocale(e.target.value),
+ style: { background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, fontSize: '0.9rem', outline: 'none', cursor: 'pointer' }
+ },
+ React.createElement('option', { value: "en" }, "English"),
+ React.createElement('option', { value: "hi" }, "हिन्दी"),
+ React.createElement('option', { value: "kn" }, "ಕನ್ನಡ")
+ )
+ ),
+ user && React.createElement('div', {
+ style: { display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--surface-hover)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--border)' }
+ }, React.createElement(User, { size: 16, style: { color: 'var(--text-secondary)' } }),
+ React.createElement('span', { style: { fontSize: '0.85rem', fontWeight: 500, color: 'var(--text)' } }, user.phone),
+ React.createElement('button', {
+ onClick: logoutUser,
+ style: { background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer', display: 'flex', alignItems: 'center' }
+ }, React.createElement(LogOut, { size: 16 }))
+ )
+ )));
+ }
+ // 2. BOTTOM NAV COMPONENT (MOBILE)
+ function BottomTab({ activeTab, setActiveTab }) {
+ const { t } = useLanguage();
+ const tabs = [
+ { id: 'home', label: t('tabHome'), icon: HomeIcon },
+ { id: 'articles', label: t('tabArticles'), icon: BookOpen },
+ { id: 'marketplace', label: t('tabMarketplace'), icon: ShoppingBag },
+ { id: 'askexpert', label: t('tabAskExpert'), icon: MessageSquare }
+ ];
+ return React.createElement('nav', {
+ className: "glass safe-footer mobile-nav-bar",
+ style: { position: 'fixed', bottom: 0, left: 0, right: 0, height: 'calc(var(--bottom-tab-height) + env(safe-area-inset-bottom))', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-around', alignItems: 'center', paddingBottom: 'max(8px, env(safe-area-inset-bottom))', zIndex: 100 }
+ }, tabs.map(tab => {
+ const Icon = tab.icon;
+ const isActive = activeTab === tab.id;
+ return React.createElement('button', {
+ key: tab.id, onClick: () => setActiveTab(tab.id), className: "no-select nav-item",
+ style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', color: isActive ? 'var(--primary)' : 'var(--text-secondary)', cursor: 'pointer', width: '25%', height: '100%', gap: '4px' }
+ }, React.createElement('div', {
+ style: { backgroundColor: isActive ? 'var(--primary-light)' : 'transparent', padding: '6px 16px', borderRadius: '16px', display: 'flex' }
+ }, React.createElement(Icon, { size: 20 })),
+ React.createElement('span', { style: { fontSize: '0.75rem', fontWeight: isActive ? 700 : 500 } }, tab.label)
+ );
+ }), React.createElement('style', null, `@media (min-width: 768px) { .mobile-nav-bar { display: none !important; } }`));
+ }
+ // 3. WEATHER WIDGET
+ function WeatherWidget() {
+ const { t } = useLanguage();
+ const { weather, setWeather } = useApp();
+ const [loading, setLoading] = useState(false);
+ const [showRegions, setShowRegions] = useState(false);
+ const regionsWeather = {
+ "Bangalore Rural": {
+ temp: 28, condition: "Sunny", humidity: 55, wind: 12,
+ advice: { en: "Excellent conditions for Rose and Anthurium harvesting. Keep greenhouse ventilation open.", hi: "गुलाब और एन्थ्यूरियम की कटाई के लिए उत्कृष्ट परिस्थितियाँ। ग्रीनहाउस खुला रखें।", kn: "ಹೂವುಗಳ ಕೊಯ್ಲು ಮಾಡಲು ಸೂಕ್ತ ಸಮಯ. ಹಸಿರುಮನೆ ಗಾಳಿ ಮುಕ್ತವಾಗಿರಲಿ." },
+ forecast: [{ day: "Mon", temp: 28, cond: "Sunny" }, { day: "Tue", temp: 29, cond: "Partly Cloudy" }, { day: "Wed", temp: 30, cond: "Light Rain" }]
+ },
+ "Gauriganj UP": {
+ temp: 34, condition: "Sunny", humidity: 40, wind: 15,
+ advice: { en: "High heat warning! Water Marigold crops in early mornings. Use shade netting.", hi: "भीषण गर्मी की चेतावनी! सुबह गेंदे की फसलों में पानी दें। शेड नेट लगाएं।", kn: "ಅತಿಯಾದ ಬಿಸಿಲು ಮುನ್ನೆಚ್ಚರಿಕೆ! ಮುಂಜಾನೆ ಚೆಂಡು ಹೂವಿನ ಬೆಳೆಗೆ ನೀರು ಹಾಯಿಸಿ." },
+ forecast: [{ day: "Mon", temp: 34, cond: "Sunny" }, { day: "Tue", temp: 35, cond: "Sunny" }, { day: "Wed", temp: 33, cond: "Partly Cloudy" }]
+ },
+ "Thovalai TN": {
+ temp: 31, condition: "Light Rain", humidity: 80, wind: 18,
+ advice: { en: "Light rain. Hold off pesticide sprays. Jasmine prices are high today.", hi: "हल्की बारिश। कीटनाशक छिड़काव रोकें। चमेली के दाम आज ऊंचे हैं।", kn: "ಹಗುರ ಮಳೆ ಸಾಧ್ಯತೆ. ಕೀಟನಾಶक ಸಿಂಪಡಿಸಬೇಡಿ. ಮಲ್ಲಿಗೆ ದರ ಹೆಚ್ಚಾಗಿದೆ." },
+ forecast: [{ day: "Mon", temp: 31, cond: "Light Rain" }, { day: "Tue", temp: 30, cond: "Cloudy" }, { day: "Wed", temp: 29, cond: "Light Rain" }]
+ }
+ };
+ const requestLocation = () => {
+ setLoading(true);
+ if (navigator.geolocation) {
+ navigator.geolocation.getCurrentPosition(
+ (pos) => {
+ setTimeout(() => {
+ const keys = Object.keys(regionsWeather);
+ const rKey = keys[Math.floor(Math.random() * keys.length)];
+ setWeather({ ...regionsWeather[rKey], region: `📍 GPS (${rKey})` });
+ setLoading(false);
+ }, 1000);
+ },
+ () => { setShowRegions(true); setLoading(false); }
+ );
+ } else { setShowRegions(true); setLoading(false); }
+ };
+ const selectRegion = (name) => {
+ setWeather({ ...regionsWeather[name], region: name });
+ setShowRegions(false);
+ };
+ const getWeatherIcon = (cond, size = 28) => {
+ if (cond === "Sunny") return React.createElement(Sun, { size, style: { color: '#ffb703' } });
+ if (cond === "Light Rain") return React.createElement(CloudRain, { size, style: { color: '#219ebc' } });
+ return React.createElement(Cloud, { size, style: { color: '#8ecae6' } });
+ };
+ const Sun = ({ size, style }) => React.createElement('span', { style: { fontSize: size, ...style } }, "☀️");
+ const CloudRain = ({ size, style }) => React.createElement('span', { style: { fontSize: size, ...style } }, "🌧️");
+ const Cloud = ({ size, style }) => React.createElement('span', { style: { fontSize: size, ...style } }, "☁️");
+ return React.createElement('div', {
+ className: "glass",
+ style: { padding: '20px', borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', position: 'relative' }
+ },
+ React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' } },
+ React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+ React.createElement(MapPin, { size: 18, style: { color: 'var(--primary)' } }),
+ React.createElement('span', { style: { fontWeight: 700, fontSize: '0.95rem' } }, weather.region)
+ ),
+ React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+ React.createElement('button', { onClick: requestLocation, style: { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary)' } },
+ React.createElement(Compass, { size: 18, className: loading ? 'spin-anim' : '' })
+ ),
+ React.createElement('button', { onClick: () => setShowRegions(!showRegions), style: { backgroundColor: 'var(--surface-hover)', border: '1px solid var(--border)', borderRadius: '6px', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', color: 'var(--text)' } }, "Change")
+ )
+ ),
+ showRegions && React.createElement('div', {
+ className: "glass",
+ style: { position: 'absolute', top: '50px', right: '20px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '12px', zIndex: 10, width: '180px' }
+ },
+ React.createElement('h4', { style: { fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', color: 'var(--text-secondary)' } }, "Select Region"),
+ React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '6px' } },
+ Object.keys(regionsWeather).map(n => React.createElement('button', {
+ key: n, onClick: () => selectRegion(n),
+ style: { padding: '8px 10px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--surface-hover)', cursor: 'pointer', fontSize: '0.85rem', textAlign: 'left', color: 'var(--text)' }
+ }, n))
+ )
+ ),
+ React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '14px' } },
+ React.createElement('div', { style: { backgroundColor: 'var(--primary-light)', padding: '12px', borderRadius: '14px' } }, getWeatherIcon(weather.condition, 36)),
+ React.createElement('div', null,
+ React.createElement('span', { style: { fontSize: '2rem', fontWeight: 800, color: 'var(--text)' } }, `${weather.temp}°C`),
+ React.createElement('span', { style: { display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 } }, `${weather.condition} • Humidity: ${weather.humidity}%`)
+ )
+ ),
+ React.createElement('div', {
+ style: { backgroundColor: 'var(--secondary-light)', borderLeft: '4px solid var(--secondary)', padding: '10px 14px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', lineHeight: 1.4 }
+ }, `💡 ${weather.advice?.en || "Optimal harvesting parameters today."}`)
+ );
+ }
+ // 4. SVG CHART COMPONENT
+ function MarketChart() {
+ const { t } = useLanguage();
+ const { marketPrices, myCrops, addCropToDashboard, removeCropFromDashboard } = useApp();
+ const [selectedCrop, setSelectedCrop] = useState(myCrops[0] || 'Rose');
+ const [hoveredPoint, setHoveredPoint] = useState(null);
+ const [isOpen, setIsOpen] = useState(false);
+ const allCrops = ['Rose', 'Marigold', 'Jasmine', 'Anthurium'];
+ const history = marketPrices[selectedCrop] || [];
+ const width = 500; const height = 200;
+ const paddingLeft = 40; const paddingRight = 20;
+ const paddingTop = 30; const paddingBottom = 40;
+ const chartWidth = width - paddingLeft - paddingRight;
+ const chartHeight = height - paddingTop - paddingBottom;
+ const prices = history.map(h => h.price);
+ const maxPrice = Math.max(...prices, 10) * 1.15;
+ const minPrice = Math.min(...prices, 0) * 0.85;
+ const priceRange = maxPrice - minPrice;
+ const points = history.map((h, i) => {
+ const x = paddingLeft + (i / (history.length - 1)) * chartWidth;
+ const y = height - paddingBottom - ((h.price - minPrice) / priceRange) * chartHeight;
+ return { x, y, day: h.day, price: h.price };
+ });
+ let pathD = '';
+ if (points.length > 0) {
+ pathD = `M ${points[0].x} ${points[0].y}`;
+ for (let i = 1; i < points.length; i++) pathD += ` L ${points[i].x} ${points[i].y}`;
+ }
+ let areaD = '';
+ if (points.length > 0) {
+ areaD = `${pathD} L ${points[points.length - 1].x} ${height - paddingBottom} L ${points[0].x} ${height - paddingBottom} Z`;
+ }
+ return React.createElement('div', {
+ className: "glass",
+ style: { padding: '20px', borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', position: 'relative' }
+ },
+ React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' } },
+ React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+ React.createElement(TrendingUp, { style: { color: 'var(--primary)' }, size: 20 }),
+ React.createElement('h3', { style: { fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' } }, t('marketTrendsTitle'))
+ ),
+ React.createElement('button', { onClick: () => setIsOpen(!isOpen), style: { display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600, borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none', cursor: 'pointer' } }, "+ Crops")
+ ),
+ isOpen && React.createElement('div', {
+ className: "glass",
+ style: { position: 'absolute', top: '55px', right: '20px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '12px', zIndex: 10, width: '180px' }
+ },
+ React.createElement('h4', { style: { fontSize: '0.85rem', fontWeight: 700, marginBottom: '8px', color: 'var(--text-secondary)' } }, "Select Tracked Crops"),
+ React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '6px' } },
+ allCrops.map(crop => {
+ const isTracked = myCrops.includes(crop);
+ return React.createElement('button', {
+ key: crop,
+ onClick: () => {
+ if (isTracked) {
+ if (myCrops.length > 1) {
+ removeCropFromDashboard(crop);
+ if (selectedCrop === crop) setSelectedCrop(myCrops.find(c => c !== crop) || 'Rose');
+ }
+ } else {
+ addCropToDashboard(crop); setSelectedCrop(crop);
+ }
+ },
+ style: { display: 'flex', justifyContent: 'space-between', padding: '8px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', backgroundColor: isTracked ? 'var(--primary-light)' : 'var(--surface-hover)', color: isTracked ? 'var(--primary)' : 'var(--text)' }
+ }, crop, isTracked && React.createElement(Check, { size: 14 }));
+ })
+ )
+ ),
+ React.createElement('div', { style: { display: 'flex', gap: '8px', overflowX: 'auto', marginBottom: '10px' } },
+ myCrops.map(crop => React.createElement('button', {
+ key: crop, onClick: () => setSelectedCrop(crop),
+ style: { padding: '6px 14px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, border: `1px solid ${selectedCrop === crop ? 'var(--primary)' : 'var(--border)'}`, backgroundColor: selectedCrop === crop ? 'var(--primary)' : 'var(--surface)', color: selectedCrop === crop ? 'white' : 'var(--text-secondary)', cursor: 'pointer', whiteSpace: 'nowrap' }
+ }, crop))
+ ),
+ React.createElement('div', { style: { position: 'relative', width: '100%', overflow: 'hidden' } },
+ React.createElement('svg', { viewBox: `0 0 ${width} ${height}`, style: { width: '100%', height: 'auto', overflow: 'visible' } },
+ React.createElement('defs', null,
+ React.createElement('linearGradient', { id: `gradient-${selectedCrop}`, x1: "0", y1: "0", x2: "0", y2: "1" },
+ React.createElement('stop', { offset: "0%", stopColor: "var(--primary)", stopOpacity: "0.25" }),
+ React.createElement('stop', { offset: "100%", stopColor: "var(--primary)", stopOpacity: "0.0" })
+ )
+ ),
+ [0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+ const y = paddingTop + ratio * chartHeight;
+ const val = maxPrice - ratio * priceRange;
+ return React.createElement('g', { key: i },
+ React.createElement('line', { x1: paddingLeft, y1: y, x2: width - paddingRight, y2: y, stroke: "var(--border)", strokeWidth: "0.5", strokeDasharray: "4 4" }),
+ React.createElement('text', { x: paddingLeft - 8, y: y + 4, fill: "var(--text-secondary)", fontSize: "10", textAnchor: "end" }, `₹${Math.round(val)}`)
+ );
+ }),
+ areaD && React.createElement('path', { d: areaD, fill: `url(#gradient-${selectedCrop})` }),
+ pathD && React.createElement('path', { d: pathD, fill: "none", stroke: "var(--primary)", strokeWidth: "3.5", strokeLinecap: "round" }),
+ points.map((pt, i) => React.createElement('circle', {
+ key: i, cx: pt.x, cy: pt.y, r: hoveredPoint?.index === i ? 7 : 5,
+ fill: hoveredPoint?.index === i ? 'var(--secondary)' : 'var(--primary)',
+ stroke: "var(--surface)", strokeWidth: "2.5", style: { cursor: 'pointer' },
+ onMouseEnter: () => setHoveredPoint({ ...pt, index: i }),
+ onMouseLeave: () => setHoveredPoint(null)
+ })),
+ points.map((pt, i) => React.createElement('text', {
+ key: i, x: pt.x, y: height - paddingBottom + 20, fill: "var(--text-secondary)", fontSize: "11", fontWeight: "600", textAnchor: "middle"
+ }, pt.day))
+ ),
+ hoveredPoint && React.createElement('div', {
+ style: { position: 'absolute', left: `${(hoveredPoint.x / width) * 100}%`, top: `${(hoveredPoint.y / height) * 100 - 15}%`, transform: 'translate(-50%, -100%)', backgroundColor: 'var(--text)', color: 'var(--background)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }
+ }, `₹${hoveredPoint.price}`)
+ )
+ );
+ }
+ // 5. DIAGNOSTICS CHATBOT COMPONENT
+ function Chatbot() {
+ const { t } = useLanguage();
+ const [messages, setMessages] = useState([{ id: '1', sender: 'bot', text: t('chatWelcome'), image: null }]);
+ const [inputText, setInputText] = useState('');
+ const [attachedImage, setAttachedImage] = useState(null);
+ const [isTyping, setIsTyping] = useState(false);
+ const chatEndRef = useRef(null);
+ useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, isTyping]);
+ const handleImageAttach = (e) => {
+ const file = e.target.files[0];
+ if (file) {
+ const reader = new FileReader();
+ reader.onloadend = () => setAttachedImage(reader.result);
+ reader.readAsDataURL(file);
+ }
+ };
+ const handleSend = () => {
+ if (!inputText.trim() && !attachedImage) return;
+ const userMsg = { id: Date.now().toString(), sender: 'user', text: inputText.trim(), image: attachedImage };
+ setMessages(prev => [...prev, userMsg]);
+ setInputText(''); setAttachedImage(null); setIsTyping(true);
+ setTimeout(() => {
+ let botReply = userMsg.image ? t('botResultDisease') : "I can guide you on flower cultivation, disease diagnostics through photo uploads, subsidies, and prices!";
+ setMessages(prev => [...prev, { id: 'bot-' + Date.now(), sender: 'bot', text: botReply, image: null }]);
+ setIsTyping(false);
+ }, 1500);
+ };
+ return React.createElement('div', {
+ className: "glass",
+ style: { display: 'flex', flexDirection: 'column', height: '400px', borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', overflow: 'hidden' }
+ },
+ React.createElement('div', {
+ style: { backgroundColor: 'var(--primary)', color: 'white', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }
+ }, React.createElement(Bot, { size: 22 }),
+ React.createElement('div', null,
+ React.createElement('h3', { style: { fontSize: '1rem', fontWeight: 700 } }, t('chatbotName')),
+ React.createElement('span', { style: { fontSize: '0.75rem', opacity: 0.85 } }, "🟢 PushpaMitra Bot")
+ )
+ ),
+ React.createElement('div', {
+ style: { flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: 'var(--background)' }
+ },
+ messages.map(msg => React.createElement('div', {
+ key: msg.id, style: { display: 'flex', flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row', gap: '8px', maxWidth: '85%', alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start' }
+ },
+ React.createElement('div', { style: { backgroundColor: msg.sender === 'user' ? 'var(--secondary-light)' : 'var(--primary-light)', padding: '6px', borderRadius: '50%', color: msg.sender === 'user' ? 'var(--secondary)' : 'var(--primary)', display: 'flex' } },
+ msg.sender === 'user' ? React.createElement(User, { size: 16 }) : React.createElement(Bot, { size: 16 })
+ ),
+ React.createElement('div', {
+ style: { backgroundColor: msg.sender === 'user' ? 'var(--primary)' : 'var(--surface)', color: msg.sender === 'user' ? 'white' : 'var(--text)', padding: '12px 16px', borderRadius: '12px' }
+ },
+ msg.image && React.createElement('img', { src: msg.image, style: { width: '100%', maxHeight: '140px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', display: 'block' } }),
+ React.createElement('span', { style: { fontSize: '0.9rem', lineHeight: 1.4 } }, msg.text)
+ )
+ )),
+ isTyping && React.createElement('div', { style: { display: 'flex', gap: '8px', alignSelf: 'flex-start' } },
+ React.createElement('div', { style: { backgroundColor: 'var(--surface)', border: '1px solid var(--border)', padding: '10px 16px', borderRadius: '12px' } }, `${t('botDiagnosing')} `)
+ ),
+ React.createElement('div', { ref: chatEndRef })
+ ),
+ attachedImage && React.createElement('div', {
+ style: { padding: '8px 16px', backgroundColor: 'var(--surface-hover)', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+ },
+ React.createElement('img', { src: attachedImage, style: { width: '40px', height: '40px', objectFit: 'cover', borderRadius: '6px' } }),
+ React.createElement('button', { onClick: () => setAttachedImage(null), style: { background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer' } }, React.createElement(Trash2, { size: 18 }))
+ ),
+ React.createElement('div', {
+ style: { padding: '12px 16px', backgroundColor: 'var(--surface)', borderTop: '1px solid var(--border)', display: 'flex', gap: '8px', alignItems: 'center' }
+ },
+ React.createElement('div', { style: { position: 'relative' } },
+ React.createElement('input', { type: "file", accept: "image/*", onChange: handleImageAttach, style: { position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' } }),
+ React.createElement('button', { style: { padding: '10px', borderRadius: '10px', backgroundColor: 'var(--surface-hover)', border: '1px solid var(--border)', cursor: 'pointer' } }, React.createElement(ImageIcon, { size: 20 }))
+ ),
+ React.createElement('input', {
+ type: "text", value: inputText, onChange: (e) => setInputText(e.target.value),
+ onKeyDown: (e) => e.key === 'Enter' && handleSend(),
+ placeholder: t('chatbotPlaceholder'),
+ style: { flex: 1, padding: '10px 14px', border: '1px solid var(--border)', borderRadius: '10px', outline: 'none' }
+ }),
+ React.createElement('button', { onClick: handleSend, style: { backgroundColor: 'var(--primary)', border: 'none', color: 'white', padding: '10px', borderRadius: '10px', cursor: 'pointer' } }, React.createElement(Send, { size: 20 }))
+ )
+ );
+ }
+ // 6. MARKETPLACE LISTING FORM
+ function ListingForm({ onClose }) {
+ const { t } = useLanguage();
+ const { addListing } = useApp();
+ const [type, setType] = useState('sell');
+ const [flowerType, setFlowerType] = useState('Rose');
+ const [quantity, setQuantity] = useState('');
+ const [price, setPrice] = useState('');
+ const [location, setLocation] = useState('');
+ const [phone, setPhone] = useState('');
+ const [image, setImage] = useState(null);
+ const [activeDialog, setActiveDialog] = useState(null);
+ const listingTypes = [
+ { value: 'sell', label: t('sellFlower'), desc: 'I have flowers to sell' },
+ { value: 'buy', label: t('buyFlower'), desc: 'I want to purchase flowers' }
+ ];
+ const flowerTypes = [
+ { value: 'Rose', color: '#ff4d6d' }, { value: 'Marigold', color: '#ffb703' },
+ { value: 'Jasmine', color: '#8ecae6' }, { value: 'Anthurium', color: '#d90429' }
+ ];
+ const handleImageUpload = (e) => {
+ const file = e.target.files[0];
+ if (file) {
+ const reader = new FileReader();
+ reader.onloadend = () => setImage(reader.result);
+ reader.readAsDataURL(file);
+ }
+ };
+ const handleSubmit = (e) => {
+ e.preventDefault();
+ if (!quantity || !price || !location || !phone) return;
+ addListing({ type, flowerType, quantity, price, location, phone, image });
+ onClose();
+ };
+ return React.createElement('div', {
+ style: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '16px' }
+ },
+ React.createElement('div', {
+ className: "glass",
+ style: { backgroundColor: 'var(--surface)', borderRadius: 'var(--radius)', width: '100%', maxWidth: '450px', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative' }
+ },
+ React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '16px' } },
+ React.createElement('h2', { style: { fontSize: '1.2rem', color: 'var(--primary)', fontWeight: 700 } }, t('postListingTitle')),
+ React.createElement('button', { onClick: onClose, style: { background: 'none', border: 'none', cursor: 'pointer' } }, React.createElement(X, { size: 20 }))
+ ),
+ React.createElement('form', { onSubmit: handleSubmit, style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('listingType')),
+ React.createElement('button', { type: "button", onClick: () => setActiveDialog('type'), style: { display: 'flex', justifyContent: 'space-between', padding: '12px', border: '1px solid var(--border)', borderRadius: '10px', backgroundColor: 'var(--surface)', cursor: 'pointer', color: 'var(--text)' } },
+ React.createElement('span', { style: { fontWeight: 600 } }, type === 'sell' ? t('sellFlower') : t('buyFlower')),
+ React.createElement(ChevronRight, { size: 16 })
+ )
+ ),
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('flowerType')),
+ React.createElement('button', { type: "button", onClick: () => setActiveDialog('flowerType'), style: { display: 'flex', justifyContent: 'space-between', padding: '12px', border: '1px solid var(--border)', borderRadius: '10px', backgroundColor: 'var(--surface)', cursor: 'pointer', color: 'var(--text)' } },
+ React.createElement('span', { style: { fontWeight: 600 } }, flowerType),
+ React.createElement(ChevronRight, { size: 16 })
+ )
+ ),
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('quantity')),
+ React.createElement('input', { type: "text", value: quantity, onChange: (e) => setQuantity(e.target.value), required: true })
+ ),
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('price')),
+ React.createElement('input', { type: "number", value: price, onChange: (e) => setPrice(e.target.value), required: true })
+ ),
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('location')),
+ React.createElement('input', { type: "text", value: location, onChange: (e) => setLocation(e.target.value), required: true })
+ ),
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('contactPhone')),
+ React.createElement('input', { type: "tel", value: phone, onChange: (e) => setPhone(e.target.value), required: true })
+ ),
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('uploadFlowerImg')),
+ React.createElement('div', { style: { border: '2px dashed var(--border)', borderRadius: '12px', padding: '16px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' } },
+ React.createElement('input', { type: "file", accept: "image/*", onChange: handleImageUpload, style: { position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' } }),
+ image ? React.createElement('img', { src: image, style: { width: '100%', height: '100px', objectFit: 'cover', borderRadius: '8px' } })
+ : React.createElement(Upload, { size: 24, style: { color: 'var(--primary)' } })
+ )
+ ),
+ React.createElement('div', { style: { display: 'flex', gap: '10px' } },
+ React.createElement('button', { type: "button", onClick: onClose, className: "btn btn-secondary", style: { flex: 1 } }, t('cancel')),
+ React.createElement('button', { type: "submit", className: "btn btn-primary", style: { flex: 2 } }, t('submitListing'))
+ )
+ )
+ ),
+ activeDialog === 'type' && React.createElement('div', {
+ style: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 300 }
+ },
+ React.createElement('div', { className: "glass", style: { backgroundColor: 'var(--surface)', padding: '24px', borderTopLeftRadius: 'var(--radius)', borderTopRightRadius: 'var(--radius)', width: '100%', maxWidth: '450px' } },
+ React.createElement('h3', { style: { marginBottom: '16px', color: 'var(--primary)', fontWeight: 700 } }, t('listingType')),
+ listingTypes.map(opt => React.createElement('button', {
+ key: opt.value, onClick: () => { setType(opt.value); setActiveDialog(null); },
+ style: { display: 'block', width: '100%', padding: '14px', border: '1px solid var(--border)', borderRadius: '10px', cursor: 'pointer', marginBottom: '8px', textAlign: 'left', backgroundColor: type === opt.value ? 'var(--primary-light)' : 'var(--surface)' }
+ }, opt.label))
+ )
+ ),
+ activeDialog === 'flowerType' && React.createElement('div', {
+ style: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 300 }
+ },
+ React.createElement('div', { className: "glass", style: { backgroundColor: 'var(--surface)', padding: '24px', borderTopLeftRadius: 'var(--radius)', borderTopRightRadius: 'var(--radius)', width: '100%', maxWidth: '450px' } },
+ React.createElement('h3', { style: { marginBottom: '16px', color: 'var(--primary)', fontWeight: 700 } }, t('selectFlower')),
+ flowerTypes.map(opt => React.createElement('button', {
+ key: opt.value, onClick: () => { setFlowerType(opt.value); setActiveDialog(null); },
+ style: { display: 'block', width: '100%', padding: '14px', border: '1px solid var(--border)', borderRadius: '10px', cursor: 'pointer', marginBottom: '8px', textAlign: 'left', backgroundColor: flowerType === opt.value ? 'var(--primary-light)' : 'var(--surface)' }
+ }, opt.value))
+ )
+ )
+ );
+ }
+ // ----------------------------------------------------
+ // PAGES
+ // ----------------------------------------------------
+ // 1. HOME DASHBOARD
+ function Home({ setActiveTab, setArticleCategory, setArticleSearchQuery }) {
+ const { t, locale } = useLanguage();
+ const { articles } = useApp();
+ const [searchVal, setSearchVal] = useState('');
+ const handleSearch = (e) => {
+ e.preventDefault();
+ if (searchVal.trim()) {
+ setArticleSearchQuery(searchVal.trim());
+ setArticleCategory('all');
+ setActiveTab('articles');
+ }
+ };
+ const filterCat = (cat) => {
+ setArticleCategory(cat); setArticleSearchQuery(''); setActiveTab('articles');
+ };
+ const categories = [
+ { id: 'cultivation', label: t('cultivationTechniques'), icon: Sprout, color: '#4caf50', bg: 'var(--primary-light)' },
+ { id: 'pestControl', label: t('pestManagement'), icon: ShieldAlert, color: '#f44336', bg: 'hsl(0, 80%, 96%)' },
+ { id: 'schemes', label: t('governmentSchemes'), icon: Award, color: '#ff9800', bg: 'var(--secondary-light)' }
+ ];
+ function Sprout({ size }) { return React.createElement('span', { style: { fontSize: size } }, "🌱"); }
+ return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' } },
+ React.createElement('form', { onSubmit: handleSearch, style: { position: 'relative', width: '100%' } },
+ React.createElement('input', {
+ type: "text", value: searchVal, onChange: (e) => setSearchVal(e.target.value),
+ placeholder: t('searchPlaceholder'),
+ style: { width: '100%', padding: '16px 20px 16px 54px', borderRadius: '24px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)', outline: 'none' }
+ }),
+ React.createElement(Search, { size: 22, style: { position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' } })
+ ),
+ React.createElement('div', { className: "dashboard-grid", style: { display: 'grid', gridTemplateColumns: '1fr', gap: '20px' } },
+ React.createElement(WeatherWidget),
+ React.createElement(MarketChart)
+ ),
+ React.createElement('div', null,
+ React.createElement('h3', { style: { fontSize: '1.1rem', fontWeight: 700, marginBottom: '12px' } }, "Floriculture Portals"),
+ React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' } },
+ categories.map(c => {
+ const Icon = c.icon;
+ return React.createElement('button', {
+ key: c.id, onClick: () => filterCat(c.id), className: "glass",
+ style: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 14px', borderRadius: 'var(--radius)', border: '1px solid var(--border)', cursor: 'pointer', gap: '12px', backgroundColor: 'var(--surface)' }
+ },
+ React.createElement('div', { style: { backgroundColor: c.bg, padding: '12px', borderRadius: '50%', color: c.color } }, React.createElement(Icon, { size: 24 })),
+ React.createElement('span', { style: { fontSize: '0.85rem', fontWeight: 700, color: 'var(--text)' } }, c.label)
+ );
+ })
+ )
+ )
+ );
+ }
+ // 2. KNOWLEDGE ARTICLES BASE (PULL TO REFRESH INTERCEPTOR)
+ function Articles({ activeCategory, setActiveCategory, searchQuery, setSearchQuery }) {
+ const { locale, t } = useLanguage();
+ const { articles, refreshArticles } = useApp();
+ const [refreshing, setRefreshing] = useState(false);
+ const [activeArticle, setActiveArticle] = useState(null);
+ const [startY, setStartY] = useState(0);
+ const [pullProgress, setPullProgress] = useState(0);
+ const handleTouchStart = (e) => { if (window.scrollY === 0) setStartY(e.touches[0].clientY); };
+ const handleTouchMove = (e) => {
+ const diff = e.touches[0].clientY - startY;
+ if (diff > 0) {
+ const progress = Math.min(diff / 120, 1.2);
+ setPullProgress(progress);
+ }
+ };
+ const handleTouchEnd = () => {
+ if (pullProgress >= 1.0) {
+ setRefreshing(true);
+ refreshArticles().then(() => { setRefreshing(false); setPullProgress(0); });
+ } else { setPullProgress(0); }
+ };
+ const categories = [
+ { id: 'all', label: t('all') },
+ { id: 'cultivation', label: t('cultivation') },
+ { id: 'pestControl', label: t('pestControl') },
+ { id: 'schemes', label: t('schemes') },
+ { id: 'news', label: t('news') }
+ ];
+ const filtered = articles.filter(art => {
+ const titleText = (art.title[locale] || art.title.en || '').toLowerCase();
+ const query = searchQuery.toLowerCase();
+ return titleText.includes(query) && (activeCategory === 'all' || art.category === activeCategory);
+ });
+ return React.createElement('div', {
+ onTouchStart: handleTouchStart, onTouchMove: handleTouchMove, onTouchEnd: handleTouchEnd,
+ style: { position: 'relative', minHeight: '80vh', padding: '16px' }
+ },
+ React.createElement('div', {
+ className: `pull-to-refresh-indicator ${pullProgress > 0 || refreshing ? 'visible' : ''}`,
+ style: { transform: refreshing ? 'translateY(0)' : `translateY(calc(-60px + ${pullProgress * 50}px))`, opacity: refreshing ? 1 : Math.min(pullProgress, 1) }
+ }, React.createElement(RefreshCw, { size: 16, className: refreshing ? 'spin-anim' : '' }), React.createElement('span', null, refreshing ? t('refreshing') : t('pullToRefresh'))),
+ React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' } },
+ React.createElement('h2', { style: { fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' } }, t('articleSearch')),
+ React.createElement('button', { onClick: () => { setRefreshing(true); refreshArticles().then(() => setRefreshing(false)); }, style: { background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' } },
+ React.createElement(RefreshCw, { size: 18, className: refreshing ? 'spin-anim' : '' })
+ )
+ ),
+ React.createElement('div', { style: { position: 'relative', width: '100%', marginBottom: '16px' } },
+ React.createElement('input', {
+ type: "text", value: searchQuery, onChange: (e) => setSearchQuery(e.target.value),
+ placeholder: t('searchPlaceholder'),
+ style: { width: '100%', padding: '12px 16px 12px 46px', borderRadius: '14px', border: '1px solid var(--border)', outline: 'none', backgroundColor: 'var(--surface)', color: 'var(--text)' }
+ }),
+ React.createElement(Search, { size: 18, style: { position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' } })
+ ),
+ React.createElement('div', { style: { display: 'flex', gap: '8px', overflowX: 'auto', marginBottom: '16px' } },
+ categories.map(c => React.createElement('button', {
+ key: c.id, onClick: () => setActiveCategory(c.id),
+ style: { padding: '8px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', border: `1px solid ${activeCategory === c.id ? 'var(--primary)' : 'var(--border)'}`, backgroundColor: activeCategory === c.id ? 'var(--primary)' : 'var(--surface)', color: activeCategory === c.id ? 'white' : 'var(--text-secondary)', whiteSpace: 'nowrap' }
+ }, c.label))
+ ),
+ React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '16px' } },
+ filtered.map(art => React.createElement('div', {
+ key: art.id, className: "glass",
+ style: { borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', padding: '16px' }
+ },
+ React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' } },
+ art.aiGenerated ? React.createElement('span', { className: "badge badge-ai" }, t('aiGenerated'))
+ : React.createElement('span', { className: "badge badge-primary" }, art.category),
+ React.createElement('span', { style: { fontSize: '0.75rem', color: 'var(--text-secondary)' } }, art.date)
+ ),
+ React.createElement('h3', { style: { fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)', marginBottom: '6px' } }, art.title[locale] || art.title.en),
+ React.createElement('p', { style: { fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '8px' } }, art.summary[locale] || art.summary.en),
+ React.createElement('button', { onClick: () => setActiveArticle(art), className: "btn btn-secondary", style: { padding: '6px 12px', fontSize: '0.8rem' } }, t('readMore'))
+ ))
+ ),
+ activeArticle && React.createElement('div', {
+ style: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '16px' }
+ },
+ React.createElement('div', {
+ className: "glass", style: { backgroundColor: 'var(--surface)', borderRadius: 'var(--radius)', width: '100%', maxWidth: '450px', padding: '24px', position: 'relative' }
+ },
+ React.createElement('button', { onClick: () => setActiveArticle(null), style: { position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', cursor: 'pointer' } }, React.createElement(X, { size: 20 })),
+ React.createElement('h3', { style: { fontSize: '1.2rem', color: 'var(--primary)', marginBottom: '12px', fontWeight: 800 } }, activeArticle.title[locale] || activeArticle.title.en),
+ React.createElement('p', { style: { fontSize: '0.95rem', lineHeight: 1.5, color: 'var(--text)' } }, activeArticle.content[locale] || activeArticle.content.en)
+ )
+ )
+ );
+ }
+ // 3. MARKETPLACE PAGE
+ function Marketplace() {
+ const { t } = useLanguage();
+ const { listings, user, cancelListing, refreshMarketplace } = useApp();
+ const [activeTab, setActiveTab] = useState('sell');
+ const [showForm, setShowForm] = useState(false);
+ const [refreshing, setRefreshing] = useState(false);
+ const [pullProgress, setPullProgress] = useState(0);
+ const [startY, setStartY] = useState(0);
+ const handleTouchStart = (e) => { if (window.scrollY === 0) setStartY(e.touches[0].clientY); };
+ const handleTouchMove = (e) => {
+ const diff = e.touches[0].clientY - startY;
+ if (diff > 0) setPullProgress(Math.min(diff / 120, 1.2));
+ };
+ const handleTouchEnd = () => {
+ if (pullProgress >= 1.0) {
+ setRefreshing(true);
+ refreshMarketplace().then(() => { setRefreshing(false); setPullProgress(0); });
+ } else setPullProgress(0);
+ };
+ const filtered = listings.filter(x => x.type === activeTab);
+ return React.createElement('div', {
+ onTouchStart: handleTouchStart, onTouchMove: handleTouchMove, onTouchEnd: handleTouchEnd,
+ style: { position: 'relative', minHeight: '80vh', padding: '16px', paddingBottom: '100px' }
+ },
+ React.createElement('div', {
+ className: `pull-to-refresh-indicator ${pullProgress > 0 || refreshing ? 'visible' : ''}`,
+ style: { transform: refreshing ? 'translateY(0)' : `translateY(calc(-60px + ${pullProgress * 50}px))`, opacity: refreshing ? 1 : Math.min(pullProgress, 1) }
+ }, React.createElement(RefreshCw, { size: 16, className: refreshing ? 'spin-anim' : '' }), React.createElement('span', null, refreshing ? t('refreshing') : t('pullToRefresh'))),
+ React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' } },
+ React.createElement('h2', { style: { fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' } }, t('marketplaceTitle')),
+ React.createElement('button', { onClick: () => { setRefreshing(true); refreshMarketplace().then(() => setRefreshing(false)); }, style: { background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' } }, React.createElement(RefreshCw, { size: 18 }))
+ ),
+ React.createElement('div', { style: { display: 'flex', backgroundColor: 'var(--surface-hover)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)', marginBottom: '20px' } },
+ React.createElement('button', { onClick: () => setActiveTab('sell'), style: { flex: 1, padding: '10px', borderRadius: '8px', cursor: 'pointer', border: 'none', backgroundColor: activeTab === 'sell' ? 'var(--surface)' : 'transparent', color: activeTab === 'sell' ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: 700 } }, t('sellTab')),
+ React.createElement('button', { onClick: () => setActiveTab('buy'), style: { flex: 1, padding: '10px', borderRadius: '8px', cursor: 'pointer', border: 'none', backgroundColor: activeTab === 'buy' ? 'var(--surface)' : 'transparent', color: activeTab === 'buy' ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: 700 } }, t('buyTab'))
+ ),
+ React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '16px' } },
+ filtered.map(item => {
+ const isUserPost = user && user.phone === item.phone;
+ return React.createElement('div', {
+ key: item.id, className: "glass",
+ style: { borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', padding: '12px', display: 'flex', gap: '12px' }
+ },
+ React.createElement('div', { style: { width: '80px', height: '80px', borderRadius: '10px', backgroundColor: 'var(--primary-light)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } },
+ item.image ? React.createElement('img', { src: item.image, style: { width: '100%', height: '100%', objectFit: 'cover' } })
+ : React.createElement(ShoppingBag, { size: 24, style: { color: 'var(--primary)' } })
+ ),
+ React.createElement('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' } },
+ React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between' } },
+ React.createElement('span', { className: "badge badge-primary" }, item.flowerType),
+ isUserPost && React.createElement('button', { onClick: () => cancelListing(item.id), style: { background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer' } }, React.createElement(Trash2, { size: 16 }))
+ ),
+ React.createElement('h3', { style: { fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)' } }, `₹${item.price} `),
+ React.createElement('span', { style: { fontSize: '0.8rem', color: 'var(--text-secondary)' } }, `Qty: ${item.quantity}`),
+ React.createElement('div', { style: { fontSize: '0.75rem', color: 'var(--text-secondary)' } }, `📍 ${item.location}`)
+ )
+ );
+ })
+ ),
+ user && React.createElement('button', {
+ onClick: () => setShowForm(true),
+ style: { position: 'fixed', bottom: 'calc(var(--bottom-tab-height) + env(safe-area-inset-bottom) + 16px)', right: '16px', backgroundColor: 'var(--primary)', color: 'white', border: 'none', borderRadius: '50%', width: '56px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 90 }
+ }, React.createElement(Plus, { size: 28 })),
+ showForm && React.createElement(ListingForm, { onClose: () => setShowForm(false) })
+ );
+ }
+ // 4. ASK EXPERT PAGE (WRAPS CHATBOT CLIENT)
+ function AskExpert() {
+ const { t } = useLanguage();
+ const officers = [
+ { name: "Dr. K. Rajan (Flori-Scientist)", area: "Rose Diseases", phone: "9876543201" },
+ { name: "Officer Meena Patel", area: "Market Subsidies", phone: "9876543202" }
+ ];
+ return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' } },
+ React.createElement(Chatbot),
+ React.createElement('div', {
+ className: "glass",
+ style: { padding: '20px', borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }
+ },
+ React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' } },
+ React.createElement(Users, { size: 20, style: { color: 'var(--primary)' } }),
+ React.createElement('h3', { style: { fontSize: '1.1rem', fontWeight: 700 } }, t('expertConsultation'))
+ ),
+ React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+ officers.map((off, i) => React.createElement('div', {
+ key: i, style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderRadius: '10px', backgroundColor: 'var(--surface-hover)', border: '1px solid var(--border)' }
+ },
+ React.createElement('div', null,
+ React.createElement('h4', { style: { fontSize: '0.85rem', fontWeight: 700, color: 'var(--text)' } }, off.name),
+ React.createElement('span', { style: { fontSize: '0.75rem', color: 'var(--text-secondary)' } }, `📞 ${off.area}`)
+ ),
+ React.createElement('a', { href: `tel:${off.phone}`, className: "btn btn-primary", style: { padding: '6px 12px', fontSize: '0.75rem', textDecoration: 'none' } }, t('callOfficer'))
+ ))
+ )
+ )
+ );
+ }
+ // 5. CONTACT & SETTINGS WITH ACCOUNT PURGE
+ function Contact() {
+ const { t } = useLanguage();
+ const { user, logoutUser, deleteUserAccount } = useApp();
+ const [confirm, setConfirm] = useState(false);
+ return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' } },
+ React.createElement('div', {
+ className: "glass", style: { padding: '20px', borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }
+ },
+ React.createElement('h2', { style: { fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '14px' } }, t('helpTitle')),
+ React.createElement('p', { style: { fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '16px', color: 'var(--text)' } }, t('contactSupport')),
+ React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+ React.createElement('a', { href: "tel:18004567890", className: "btn btn-primary", style: { textDecoration: 'none', padding: '14px' } }, "Call Support Helpline"),
+ React.createElement('a', { href: "mailto:support@pushpasamriddhi.org", className: "btn btn-secondary", style: { textDecoration: 'none', padding: '14px' } }, "Email Support Desk")
+ )
+ ),
+ user && React.createElement('div', {
+ className: "glass", style: { padding: '20px', borderRadius: 'var(--radius)', backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }
+ },
+ React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' } },
+ React.createElement(Settings, { size: 20, style: { color: 'var(--primary)' } }),
+ React.createElement('h3', { style: { fontSize: '1.1rem', fontWeight: 700 } }, t('settingsSection'))
+ ),
+ React.createElement('div', { style: { padding: '12px 14px', borderRadius: '10px', backgroundColor: 'var(--surface-hover)', marginBottom: '20px' } },
+ React.createElement('span', { style: { fontSize: '0.75rem', color: 'var(--text-secondary)' } }, "Active Profile:"),
+ React.createElement('h4', { style: { fontSize: '1rem', color: 'var(--text)' } }, `+91 ${user.phone}`),
+ React.createElement('span', { style: { fontSize: '0.75rem', color: 'var(--text-secondary)' } }, `Joined: ${user.joined}`)
+ ),
+ React.createElement('button', { onClick: logoutUser, className: "btn btn-secondary", style: { width: '100%', padding: '12px', marginBottom: '16px' } }, t('logout')),
+ React.createElement('div', { style: { backgroundColor: 'hsl(0, 80%, 98%)', border: '1px solid hsl(0, 80%, 90%)', borderRadius: '12px', padding: '16px' } },
+ React.createElement('div', { style: { color: 'var(--error)', fontWeight: 700, fontSize: '0.9rem', marginBottom: '6px' } }, `⚠️ ${t('dangerZone')}`),
+ React.createElement('p', { style: { fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '12px' } }, t('deleteWarningText')),
+ confirm ? React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+ React.createElement('div', { style: { fontSize: '0.75rem', color: 'var(--error)', fontWeight: 600 } }, t('confirmDeleteAccount')),
+ React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+ React.createElement('button', { onClick: () => setConfirm(false), style: { flex: 1, padding: '8px', cursor: 'pointer' } }, "Cancel"),
+ React.createElement('button', { onClick: deleteUserAccount, style: { flex: 2, padding: '8px', backgroundColor: 'var(--error)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' } }, "Confirm Delete")
+ )
+ ) : React.createElement('button', { onClick: () => setConfirm(true), className: "btn btn-danger", style: { width: '100%', padding: '10px' } }, t('deleteAccount'))
+ )
+ )
+ );
+ }
+ // 6. OTP SIGN-IN PORTAL
+ function Login() {
+ const { t } = useLanguage();
+ const { loginUser } = useApp();
+ const [phone, setPhone] = useState('');
+ const [otp, setOtp] = useState('');
+ const [step, setStep] = useState(1);
+ const [mockOtp, setMockOtp] = useState('');
+ const [errorMsg, setErrorMsg] = useState('');
+ const handleSend = (e) => {
+ e.preventDefault();
+ if (phone.length !== 10) { setErrorMsg(t('invalidPhone')); return; }
+ setErrorMsg('');
+ const code = Math.floor(1000 + Math.random() * 9000).toString();
+ setMockOtp(code); setStep(2);
+ };
+ const handleVerify = (e) => {
+ e.preventDefault();
+ if (otp === mockOtp || otp === '1234') loginUser(phone);
+ else setErrorMsg(t('invalidOtp'));
+ };
+ return React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', padding: '24px' } },
+ React.createElement('div', {
+ className: "glass", style: { backgroundColor: 'var(--surface)', borderRadius: 'var(--radius)', padding: '30px 24px', width: '100%', maxWidth: '380px', boxShadow: 'var(--shadow-lg)' }
+ },
+ React.createElement('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '24px' } },
+ React.createElement('div', { style: { background: 'linear-gradient(135deg, var(--primary), var(--secondary))', width: '50px', height: '50px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' } },
+ React.createElement(Flower, { size: 30 })
+ ),
+ React.createElement('h2', { style: { fontSize: '1.4rem', color: 'var(--primary)', fontWeight: 800 } }, t('appName')),
+ React.createElement('span', { style: { fontSize: '0.8rem', color: 'var(--text-secondary)' } }, t('tagline'))
+ ),
+ errorMsg && React.createElement('div', { style: { backgroundColor: 'hsl(0, 80%, 95%)', color: 'var(--error)', padding: '10px', borderRadius: '8px', marginBottom: '12px', fontSize: '0.85rem', textAlign: 'center' } }, errorMsg),
+ step === 1 ? React.createElement('form', { onSubmit: handleSend, style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('phoneLabel')),
+ React.createElement('input', { type: "tel", maxLength: "10", value: phone, onChange: (e) => setPhone(e.target.value.replace(/\D/g, '')), placeholder: t('phonePlaceholder'), required: true, style: { textAlign: 'center', fontWeight: 600 } })
+ ),
+ React.createElement('button', { type: "submit", className: "btn btn-primary" }, t('sendOtp'))
+ ) : React.createElement('form', { onSubmit: handleVerify, style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+ React.createElement('div', { className: "input-group" },
+ React.createElement('label', null, t('otpLabel')),
+ React.createElement('input', { type: "text", maxLength: "4", value: otp, onChange: (e) => setOtp(e.target.value.replace(/\D/g, '')), placeholder: "Enter code", required: true, style: { textAlign: 'center', fontWeight: 700, letterSpacing: '4px' } })
+ ),
+ React.createElement('div', { style: { backgroundColor: 'var(--secondary-light)', borderLeft: '4px solid var(--secondary)', padding: '10px', borderRadius: '8px', fontSize: '0.8rem', textAlign: 'center' } },
+ `${t('mockOtpAlert')} `, React.createElement('b', { style: { color: 'var(--primary)', fontSize: '0.95rem' } }, mockOtp),
+ React.createElement('span', { style: { display: 'block', fontSize: '0.7rem', color: 'var(--text-secondary)' } }, "(Or enter 1234 to bypass)")
+ ),
+ React.createElement('button', { type: "submit", className: "btn btn-primary" }, t('verifyOtp')),
+ React.createElement('button', { type: "button", onClick: () => { setStep(1); setErrorMsg(''); }, style: { background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' } }, "← Edit Number")
+ )
+ )
+ );
+ }
+ // ----------------------------------------------------
+ // MAIN APP ROUTING & CORE CONTAINER
+ // ----------------------------------------------------
+ function AppContent() {
+ const { user } = useApp();
+ const { t } = useLanguage();
+ const [activeTab, setActiveTab] = useState('home');
+ const [articleCategory, setArticleCategory] = useState('all');
+ const [articleSearchQuery, setArticleSearchQuery] = useState('');
+ if (!user) {
+ return React.createElement('div', { className: "app-container" },
+ React.createElement(Header),
+ React.createElement(Login)
+ );
+ }
+ const renderPage = () => {
+ if (activeTab === 'home') return React.createElement(Home, { setActiveTab, setArticleCategory, setArticleSearchQuery });
+ if (activeTab === 'articles') return React.createElement(Articles, { activeCategory: articleCategory, setActiveCategory: setArticleCategory, searchQuery: articleSearchQuery, setSearchQuery: setArticleSearchQuery });
+ if (activeTab === 'marketplace') return React.createElement(Marketplace);
+ if (activeTab === 'askexpert') return React.createElement(AskExpert);
+ if (activeTab === 'contact') return React.createElement(Contact);
+ return React.createElement(Home, { setActiveTab });
+ };
+ const navTabs = [
+ { id: 'home', label: t('tabHome') },
+ { id: 'articles', label: t('tabArticles') },
+ { id: 'marketplace', label: t('tabMarketplace') },
+ { id: 'askexpert', label: t('tabAskExpert') }
+ ];
+ return React.createElement('div', { className: "app-container" },
+ React.createElement(Header),
+ React.createElement('div', {
+ className: "desktop-nav-bar",
+ style: { display: 'none', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '0 16px', position: 'sticky', top: '72px', zIndex: 90 }
+ },
+ React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1200px', margin: '0 auto' } },
+ React.createElement('div', { style: { display: 'flex' } },
+ navTabs.map(tab => React.createElement('button', {
+ key: tab.id, onClick: () => setActiveTab(tab.id),
+ style: { padding: '16px 20px', fontSize: '0.9rem', fontWeight: 700, border: 'none', background: 'none', color: activeTab === tab.id ? 'var(--primary)' : 'var(--text-secondary)', borderBottom: activeTab === tab.id ? '3px solid var(--primary)' : '3px solid transparent', cursor: 'pointer' }
+ }, tab.label))
+ ),
+ React.createElement('button', {
+ onClick: () => setActiveTab('contact'),
+ style: { display: 'flex', alignItems: 'center', gap: '6px', border: 'none', background: 'none', fontWeight: 700, fontSize: '0.9rem', color: activeTab === 'contact' ? 'var(--primary)' : 'var(--text-secondary)', cursor: 'pointer', padding: '16px' }
+ }, "Support & Settings")
+ )
+ ),
+ React.createElement('main', { style: { flex: 1 } }, renderPage()),
+ React.createElement(BottomTab, { activeTab, setActiveTab })
+ );
+ }
+ function App() {
+ return React.createElement(LanguageProvider, null,
+ React.createElement(AppProvider, null,
+ React.createElement(AppContent, null)
+ )
+ );
+ }
+ ReactDOM.createRoot(document.getElementById('root')).render(
+ React.createElement(App, null)
+ );
+ </script>
+</body>
+</html>
+
